@@ -24,22 +24,40 @@
                 <div class="field">
                     <label for="flagFile">Colony Flag:</label>
                     <input type="file" id="flagFile">
-                    <img src="" id="flagPreviewTitle">
                 </div>
-                <div class="field">
-                    <button onclick="setupColony()" id="startButton" disabled>Confirm and Start</button>
+                <img src="" id="flagPreviewTitle">
+                <div class="field" id="start">
+                    <button onclick="loadTutorial()" id="startButton" disabled>Confirm and Start</button>
                 </div>
             </div>
         </div>
     </div>
+    <div id="tutorialScreen">
+        <div>
+            <img src="background_image.png" class="gameBackground">
+        </div>
+        <div class="tutorialContent">
+            <img src="tutorial1.png">
+            <img src="tutorial2.png">
+            <img src="tutorial3.png">
+            <img src="tutorial4.png">
+            <img src="tutorial5.png">
+            <button onclick="loadGame()" id="beginGameButton">Begin Colony!</button>
+        </div>
+    </div>
     <div id="gameScreen">
         <div>
-            <img src="background_image.png" id="gameBackground">
+            <img src="background_image.png" class="gameBackground">
         </div>
         <div class="gameContent">
-            <p id="currentYear" style="font-size: 50px; display:inline-block;"><span style="background-color: lightblue;">Anno Domini: 1606</span></p>
-            <p id="colonyName" style="font-size: 50px; text-align: center; display:inline-block;"><span style="background-color: lightblue;">Colony Name</span></p>
             <img src="" id="flagPreviewGame">
+            <div class="header">
+                <p id="currentYear">Anno Domini: 1606</p>
+            </div>
+            <br>
+            <div class="header">
+                <p id="colonyName">Colony Name</p>
+            </div>
             <!-- row for two coloumns of content -->
             <div class="row">
                 <div class="column" style="background-color:#33fcff;">

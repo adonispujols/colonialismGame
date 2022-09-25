@@ -25,10 +25,22 @@
 #startButton {
     margin-top: 45px;
     font-size: 40px;
+    margin-left: 25%;
+    margin-bottom: 30px;
+}
+
+#beginGameButton {
+    font-size: 70px;
+    display: block;
+    margin-left: 25%;
 }
 
 .item {
     background-image: linear-gradient(#0033cc, #002080);
+}
+
+.item input {
+    font-size: 25px;
 }
 
 #name {
@@ -43,10 +55,13 @@
 }
 
 .field {
-    background-color: lightblue;
+    color: white;
+    /*background-color: lightblue;*/
     width: 50%;
     font-size: 40px;
     display:inline-block;
+    background-image: url('buttonBackground.png');
+    background-size: 100% 100%;
 }
 
 #title {
@@ -69,7 +84,7 @@
 
 
 #confirmJobs {
-    font-size: 20px;
+    font-size: 25px;
 }
 
 #flagPreviewTitle {
@@ -80,10 +95,19 @@
 
 #flagPreviewGame {
     display:inline-block;
-    width: 300px;
-    height: 200px;
+    width: 500px;
+    height: 250px;
     vertical-align: text-top;
     float: right;
+}
+
+#tutorialScreen {
+    display: none;
+}
+
+.tutorialContent {
+  position: relative;
+  height: 100vh;
 }
 
 #gameScreen {
@@ -104,7 +128,7 @@
   left: 0;
 }
 
-#gameBackground {
+.gameBackground {
   object-fit: cover;
   width: 100vw;
   height: 100vh;
@@ -113,10 +137,25 @@
   left: 0;
 }
 
-#currentYear {
-    font-size: 50px;
+.header {
+    background-image: url('headerBackground.png');
+    background-size: 100% 100%;
+    display: inline-block;
 }
 
+#currentYear {
+    font-size: 40px;
+    display:inline-block;
+    color: white;
+}
+
+
+#colonyName {
+    font-size: 40px;
+    text-align: center;
+    display:inline-block;
+    color: white;
+}
 .row {
     display: flex;
 }
@@ -136,11 +175,11 @@
 }
 
 #eventText {
-    font-size: 20px;
+    font-size: 23px;
 }
 
-#eventButtons {
-    font-size: 20px
+.eventButtons input {
+    font-size: 30px;
 }
 
 /*#eventEffects {
@@ -165,7 +204,7 @@
   display: none;
   font-weight: bolder;
   color: red;
-  background-color: lightblue;
+  background-color: black;
   font-size: 20px;
 }
 
@@ -179,13 +218,21 @@
 }
 
 #yearResults p {
-    background-color: lightblue;
-    display: inline-block;
-    font-size: 20px;
+    /*background-color: lightblue;*/
+    background-image: url('buttonBackground.png');
+    background-size: 100% 100%;
+    /*display: inline-block;*/
+    font-size: 25px;
+    color: white;
+    font-weight: bold;
+    /*margin: 0;*/
+    margin-bottom: -1em;
+    margin-top: 0em;
+    padding-left: 30px;
 }
 
 #startNextYearButton {
-    font-size: 20px;
+    font-size: 30px;
 }
 
 #gameOver {

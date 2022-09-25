@@ -57,6 +57,80 @@ let eventList = [
         }
         ],
         image: "fireEvent.jpg"
+    },
+    {
+        weight: 1,
+        initialEffect: {
+            effect: function() {
+                yearEndPopulation -= 30;
+            },
+            text: "A plague sweeps through town. Lost 30 people."
+        },
+        options: [
+        {
+            effect: function() {},
+            text: "QUARANTINE."
+        }
+        ],
+        image: "plague.jpg"
+    },
+    {
+        weight: 1,
+        initialEffect: {
+            effect: function() {
+                newArrivals += 148;
+            },
+            text: "Rejoice! 148 new colonists arrive at the end of the year but do not have food with them. You must provide for them next year!"
+        },
+        options: [
+        {
+            effect: function() {},
+            text: "We welcome these huddled masses."
+        }
+        ],
+        image: "arrivalNoFood.jpg"
+    },
+    {
+        weight: 1,
+        initialEffect: {
+            effect: function() {
+                newArrivals += 100;
+                totalFood += 100;
+                totalEquipment += 100;
+            },
+            text: "Good, heavens! 100 new wealthy colonists arrive, bringing 100 Food and Equipment!"
+        },
+        options: [
+        {
+            effect: function() {},
+            text: "Glorious day! May we thrive!"
+        }
+        ],
+        image: "arrivalWithFood.jpg"
+    },
+    {
+        weight: 1,
+        initialEffect: {
+            effect: function() {
+                yearEndPopulation -= 1;
+            },
+            text: "A murderer killed 1 person. You can either sentence the criminal to death, or assign a Guard to watch over him, reducing defense by 10%?"
+        },
+        options: [
+        {
+            effect: function() {
+                yearEndPopulation -=1;
+            },
+            text: "An eye for an eye. Kill him! (-1 population)"
+        },
+        {
+            effect: function() {
+                totalDefense -= 0.1;
+            },
+            text: "We need every person we can get. Spare him. (-10% Defense)"
+        }
+        ],
+        image: "fireEvent.jpg"
     }
 ];
 
@@ -88,6 +162,25 @@ let forcedFarmingEvent = {
     image: "learnFarmingEvent.jpg"
 };
 
+// introduction of slavery 1619
+let forcedSlaveryEvent = {
+    initialEffect: {
+        effect: function() {
+            console.log("slavery happening");
+            farmerModifier *= 2;
+            newArrivals += 100;
+        },
+        text: "100 Slaves arrive for the first time. Food production increased by 2x. "
+    },
+    options: [
+    {
+        effect: function() {},
+        text: "A dark day for freedom."
+    }
+    ],
+    image: "slavery.jpg"
+};
+
 /**
     Each farmer event object has:
     weight - chance from 0 to 1 of happening (0.5 = 50%)
@@ -98,12 +191,12 @@ let farmerEventList = [
     {
         weight: 1,
         farmerProductionModifier: 1,
-        text: "Normal Harvest: Output * 1."
+        text: "Normal Harvest: Output 1x."
     },
     {
         weight: 0.0001,
         farmerProductionModifier: 0.5,
-        text: "Drought halves farming output: Output * 0.5."
+        text: "Drought halves farming output: Output 0.5x."
     }
 ];
 
@@ -134,20 +227,33 @@ function showImage(input) {
 }
 
 // use given colony name
-function setupColony() {
-    colonyName = document.getElementById("name").value;
-    // alert(colonyName);
-    loadGame();
-}
+// function setupGame() {
+//     colonyName = document.getElementById("name").value;
+//     // alert(colonyName);
+//     // loadGame();
+//     loadTutorial();
+// }
 
-// start game
-function loadGame() {
-    // TODO: STOP VIDEO DON'T JUST HIDE!
-    // swap screens from start to game view
+// load tutorial page
+function loadTutorial() {
+     colonyName = document.getElementById("name").value;
     let introVideo = document.getElementById("introVideo");
     introVideo.pause();
     const initialScreen = document.getElementById("initialScreen");
     initialScreen.style.display = "none";
+    const tutorialScreen = document.getElementById("tutorialScreen");
+    tutorialScreen.style.display = "block";
+}
+
+// start game
+// TODO have a tutorial page before this!
+function loadGame() {
+    // TODO: STOP VIDEO DON'T JUST HIDE!
+    // swap screens from start to game view
+    // let introVideo = document.getElementById("introVideo");
+    // introVideo.pause();
+    const tutorialScreen = document.getElementById("tutorialScreen");
+    tutorialScreen.style.display = "none";
     const gameScreen = document.getElementById("gameScreen");
     gameScreen.style.display = "block";
 
@@ -158,9 +264,9 @@ function loadGame() {
     let equipmentText = document.getElementById("currentEquipment");
     let shelterText = document.getElementById("currentShelter");
     let defenseText = document.getElementById("currentDefense");
-    colonyNameText.textContent = colonyName;
+    colonyNameText.textContent = "Colony: " + colonyName;
     // changing text messes up style
-    colonyNameText.style.backgroundColor = "lightblue";
+    // colonyNameText.style.backgroundColor = "lightblue";
     populationText.textContent = "Population: " + GAME_START_POPULATION;
     foodText.textContent = "Food: " + GAME_START_FOOD;
     equipmentText.textContent = "Equipment: " + GAME_START_EQUIPMENT;
@@ -230,6 +336,8 @@ function rollEvent() {
     let chosenEvent = {};
     if (currentYear === 1608) {
         chosenEvent = forcedFarmingEvent;
+    } else if (currentYear === 1619) {
+        chosenEvent = forcedSlaveryEvent;
     } else {
         // random choice event
         let eventWeights = [];
@@ -376,7 +484,7 @@ function endRolls() {
         document.getElementById("defenseRoll").textContent = colonyName+" was not attacked this year.";
     }
     yearEndPopulation += newArrivals;  // newArrivals do not immediately consume resources
-    document.getElementById("finalPopulation").textContent = "With " +newArrivals+" new arriving People, Your final Population is: "+yearEndPopulation+" People!";
+    document.getElementById("finalPopulation").textContent = "With " +newArrivals+" new colonists, Your final Population is: "+yearEndPopulation+"! (new people arrive at very end of year)";
     let finalScore = totalFood + totalEquipment + totalShelter + 100;
     // if population goes to or below 0, game over
     if (yearEndPopulation <= 0) {
@@ -439,7 +547,7 @@ function startNextYear() {
     let currentYearText = document.getElementById("currentYear");
     currentYearText.textContent = "Anno Domini: " + currentYear;
     // changing text messes up style
-    currentYearText.style.backgroundColor = "lightblue";
+    // currentYearText.style.backgroundColor = "lightblue";
 
     // // if any resource is below 0, set to 0. (can't have -shelter, lol)
     // if (totalFood < 0) {
