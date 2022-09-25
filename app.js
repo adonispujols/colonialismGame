@@ -11,8 +11,8 @@ const FARMER_EVENT_WEIGHTS = [1000, 0.0001]
 // ^- population will consume based on end population but produce based on start (makes game easier)
 // ^- avoids quick gameover scenarios
 // ^- EXCLUDES NEW ARRIVALS (makes it easier so people have 1 year to accommodate the food needs of new colonists)
-let yearStartPopulation = GAME_START_POPULATION;
-let yearEndPopulation = yearStartPopulation;
+// let yearStartPopulation = GAME_START_POPULATION;
+let yearEndPopulation = GAME_START_POPULATION;
 let newArrivals = 0;  // new arrivals do not consume the year they barely arrived (makes it easier to manage)
 let farmersInput = 0;
 let huntersInput = 0;
@@ -610,7 +610,7 @@ let event1620 = {
         effect: function() {
             newArrivals += 100;
         },
-        text: "GAME OVER"
+        text: "Final year for your colony!"
     },
     options: [
     {
@@ -725,7 +725,7 @@ function confirmJobs() {
     const rawGuardsInput = parseInt(document.getElementById("guardsInput").value, 10);
     // if invalid input (e.g., if string characters included)
     if (isNaN(rawFarmersInput)||isNaN(rawBuildersInput)||isNaN(rawHuntersInput)||isNaN(rawGuardsInput)) {
-        displayErrorMessage("Invalid input. Must be an integer");
+        displayErrorMessage("Error: Every box must be filled with a number (type 0 if none)!");
     } else {
         // valid integer
         farmersInput = rawFarmersInput;
@@ -744,8 +744,11 @@ function confirmJobs() {
                 +Math.min(yearEndPopulation - jobsAssigned, totalEquipment - jobsAssigned)+" more jobs.");
         } else {
             // input is validated so we can move on to next step.
-            rollEvent();
+            // calculating and showing defense so far to help calculations
+            totalDefense = guardsInput * .03;
+            document.getElementById("currentDefense").textContent = "Defense: " + (totalDefense*100) + "%";
             console.log("inputs: "+farmersInput+", "+huntersInput+", "+buildersInput+", "+guardsInput);
+            rollEvent();
         }
     }
 }
@@ -768,7 +771,7 @@ function rollEvent() {
     // show event dialog
     document.getElementById("eventDialog").style.display = "block";
     // start updated (yearEnd) population at yearstart amount
-    yearEndPopulation = yearStartPopulation;
+    // yearEndPopulation = yearStartPopulation;
 
     // forcedFarmingEvent
     // forced event to offer to learn Farming
@@ -828,6 +831,7 @@ function rollEvent() {
         // wrapping function so event always moves forwards and updates
         optionButton.onclick = function() {
             chosenEvent.options[i].effect();
+            // updating here not a big deal since it gets overwritten by 2nd event initial updates anuwaus.
             updateResources();
             document.getElementById("endEventButton1").style.display = "none";
             document.getElementById("endEventButton2").style.display = "none";;
@@ -844,7 +848,7 @@ function rollEvent() {
             document.getElementById("eventImage").src = chosenRandomEvent.image;
             document.getElementById("eventText").textContent = chosenRandomEvent.initialEffect.text;
             for (let j = 0; j < chosenRandomEvent.options.length; j++){
-                let randomoptionButton = document.getElementById("endEventButton" + (i+1));
+                let randomoptionButton = document.getElementById("endEventButton" + (j+1));
                 randomoptionButton.style.display = "block";
                 randomoptionButton.value = chosenRandomEvent.options[j].text;
                 randomoptionButton.onclick = function() {
@@ -853,6 +857,8 @@ function rollEvent() {
                     endRolls();
                 }
             }
+            chosenRandomEvent.initialEffect.effect();
+            updateResources();  // makes effects of main event button not show
         }
     }
     // document.getElementById("endEventButton").style.display = "block";
@@ -938,8 +944,8 @@ function endRolls() {
     let producedHunterFood = huntersInput * hunterRoll;
     let producedSumFood = producedFarmerFood + producedHunterFood;
     let producedShelter = buildersInput * 5;  // shelter from builders
-    let producedDefense = guardsInput * .03;   // each guard adds 3% defense;
-    document.getElementById("farmerRoll").textContent = "Harvest Modifier: "+harvestModifier+". Farmers Produced Total of: "+producedFarmerFood + " Food.";
+    // let producedDefense = guardsInput * .03;   // each guard adds 3% defense;
+    document.getElementById("farmerRoll").textContent = "Farmer Level: " +BASE_FARMER_PRODUCTION+ ",Harvest Modifier: "+harvestModifier+",Event Modifiers: " +farmerModifier +". Farmers Produced Total: "+producedFarmerFood + " Food.";
     // TODO say different things based on hunterRoll
     document.getElementById("hunterRoll").textContent = "Hunter Roll: " + hunterRoll +
         ". Hunters produced: " + producedHunterFood + " Food";
@@ -947,11 +953,11 @@ function endRolls() {
     // add production to stockpile then consume
     totalFood += producedSumFood;
     totalShelter += producedShelter;
-    totalDefense = producedDefense;
+    // totalDefense = producedDefense;
     // consume resources, then apply negative effects (if applicable)
     totalFood -= yearEndPopulation;
     document.getElementById("netFood").textContent = "Total food produced= "+producedSumFood + " Food."
-        +" Food consumed= " + yearEndPopulation + " Food. Final Food Total= " +totalFood + " Food.";
+        +" Food consumed= " + yearEndPopulation + " Food. Net: " +(producedSumFood- yearEndPopulation) + " Food.";
     // if not enough food for each person, reduce population by difference
     if (totalFood < 0) {
         yearEndPopulation += totalFood; // total food would be negative
@@ -960,12 +966,11 @@ function endRolls() {
         // enough food for all
         document.getElementById("foodEffects").textContent = "Enough food for everyone this year. No hunger.";
     }
-    document.getElementById("shelterProduction").textContent = "Builders produced: " + producedShelter
-    +". Total Shelter= " + totalShelter;
+    document.getElementById("shelterProduction").textContent = "Builders produced: " + producedShelter;
     // more shelter losses increases amount of deaths (random roll)
     let netShelter = totalShelter - yearEndPopulation;
     if (netShelter < 0) {
-        netShelter = Math.abs(totalShelter);
+        netShelter = Math.abs(netShelter);
         let lostPops = 0;
         if (netShelter <= 5) {
             lostPops = Math.floor(Math.random() * 4) + 1;
@@ -1002,19 +1007,20 @@ function endRolls() {
 
     yearEndPopulation += newArrivals;  // newArrivals do not immediately consume resources
     document.getElementById("finalPopulation").textContent = "With " +newArrivals+" new colonists, Your final Population is: "+yearEndPopulation+"! (new people arrive at very end of year)";
+    newArrivals = 0; // update for next years population count
     let finalScore = totalFood + totalEquipment + totalShelter + 100;
     // if population goes to or below 0, game over
     if (yearEndPopulation <= 0) {
         // TODO DO NOT ENABLE BUTTOM IF GAME OVER! just show final score
         document.getElementById("gameOver").style.display = "block";
-        document.getElementById("gameOver").textContent = "All your colonists have died! "+colonyName + " is now an empty ghost town... GAME OVER! "+
+        document.getElementById("gameOver").textContent = "GAME OVER!\NAll your colonists have died! "+colonyName + " is now an empty ghost town... GAME OVER! "+
             "Final Score= "+finalScore+ " Points!";
         document.getElementById("startNextYearButton").disabled = true;
     }
     // reached final year (after 1619 you reached goal of 1920)
     if (currentYear === 1620) {
         document.getElementById("gameOver").style.display = "block";
-        document.getElementById("gameOver").textContent = "After 14 brutal years, your colony of "+colonyName
+        document.getElementById("gameOver").textContent = "GAME OVER!\NAfter 14 brutal years, your colony of "+colonyName
             +" has survived until 1620 after all odds. Your Final Score is: " +finalScore+"!";
         document.getElementById("startNextYearButton").disabled = true;
     }
@@ -1038,7 +1044,7 @@ function updateResources() {
     let equipmentText = document.getElementById("currentEquipment");
     let shelterText = document.getElementById("currentShelter");
     let defenseText = document.getElementById("currentDefense");
-    populationText.textContent = "Population: " + yearEndPopulation;
+    populationText.textContent = "Population: " + (yearEndPopulation + newArrivals);
     foodText.textContent = "Food: " + totalFood;
     equipmentText.textContent = "Equipment: " + totalEquipment;
     shelterText.textContent = "Shelter: " + totalShelter;
@@ -1055,7 +1061,7 @@ function startNextYear() {
 
     // reset data
     newArrivals = 0;
-    yearStartPopulation = yearEndPopulation;
+    // yearStartPopulation = yearEndPopulation;
     farmerModifier = 1;
     farmersInput = 0;
     huntersInput = 0;
@@ -1107,6 +1113,7 @@ function startNextYear() {
     guardsInputText.disabled = false
     guardsInputText.value = 0;
     document.getElementById("confirmJobs").disabled = false;
+    document.getElementById("currentDefense").textContent = "Defense: 0%"; // reset defense for simplicity
 }
 
 // weighted random choice. nOutcomes is a integer, weights is array of weights
