@@ -948,7 +948,7 @@ function endRolls() {
             lostPops = Math.floor(Math.random() * 20) + 1;
             yearEndPopulation -= lostPops;
         }
-        document.getElementById("shelterEffects").textContent = "You lack "+netShelter+" shelters, and as a result lost: "+lostPops+" people!";
+        document.getElementById("shelterEffects").textContent = "You lack "+(Math.ceil(netShelter))+" shelters, and as a result lost: "+lostPops+" people!";
     } else {
         // everyone has proper shelter
         document.getElementById("shelterEffects").textContent = "Everyone has a shelter so no deaths.";
