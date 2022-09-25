@@ -142,15 +142,15 @@ let eventList = [
             effect: function() {
                 yearEndPopulation -= 25;
             },
-            text: "Bad water. -25 people"
+            text: "Bad water poisons the townsfolk. -25 people"
         },
         options: [
         {
             effect: function() {},
-            text: "We will survive."
+            text: "Boil the water!."
         }
         ],
-        image: "fireEvent.jpg"
+        image: "badWaters.jpg"
     },
     {
         weight: 0.15,
@@ -174,7 +174,7 @@ let eventList = [
                 text: "We need every person we can get. Spare him. (-10% Defense this year)"
             }
         ],
-        image: "fireEvent.jpg"
+        image: "murderer.jpg"
     },
     {
         weight: .1,
@@ -190,7 +190,7 @@ let eventList = [
             text: "We will survive."
         }
         ],
-        image: "fireEvent.jpg"
+        image: "plague.jpg"
     },
     {
         weight: .05,
@@ -206,7 +206,7 @@ let eventList = [
             text: "We will survive."
         }
         ],
-        image: "fireEvent.jpg"
+        image: "weartear.jpg"
     },
     {
         weight: 0.15,
@@ -226,13 +226,12 @@ let eventList = [
             text: "We will survive."
         }
         ],
-        image: "fireEvent.jpg"
+        image: "indian_attack.jpg"
     },
     {
         weight: .2,
         initialEffect: {
             effect: function() {
-                console.log("fire happening");
                 totalShelter -= 150;
             },
             text: "A grand fire burned down several houses. You lost 150 shelter."
@@ -259,13 +258,12 @@ let eventList = [
             text: "We will survive."
         }
         ],
-        image: "fireEvent.jpg"
+        image: "foodShortage.jpg"
     },
     {
         weight: .1,
         initialEffect: {
             effect: function() {
-                console.log("fire happening");
                 farmerModifier *= 0.5;
             },
             text: "Blight: Food produced from farmers this year is cut in half"
@@ -276,7 +274,7 @@ let eventList = [
             text: "We will survive."
         }
         ],
-        image: "fireEvent.jpg"
+        image: "plague.jpg"
     },
     {
         weight: 0.05,
@@ -296,41 +294,6 @@ let eventList = [
         ],
         image: "fireEvent.jpg"
     },
-    {
-        weight: 1,
-        initialEffect: {
-            effect: function() {
-                console.log("fire happening");
-                totalShelter -= 30;
-            },
-            text: "A grand fire burned down several houses. You lost 30 shelter."
-        },
-        options: [
-        {
-            effect: function() {},
-            text: "We will survive."
-        }
-        ],
-        image: "fireEvent.jpg"
-    },
-    {
-        weight: 1,
-        initialEffect: {
-            effect: function() {
-                console.log("fire happening");
-                totalShelter -= 30;
-            },
-            text: "A grand fire burned down several houses. You lost 30 shelter."
-        },
-        options: [
-        {
-            effect: function() {},
-            text: "We will survive."
-        }
-        ],
-        image: "fireEvent.jpg"
-    },
-
 ];
 
 // learn farming
@@ -395,7 +358,7 @@ let event1606 = {
         text: "Continue"
     }
     ],
-    image: "learnFarmingEvent.jpg"
+    image: "arrivalNoFood.jpg"
 };
 
 let event1607 = {
@@ -413,7 +376,7 @@ let event1607 = {
         text: "Continue"
     }
     ],
-    image: "learnFarmingEvent.jpg"
+    image: "plague.jpg"
 };
 
 let event1609 = {
@@ -428,7 +391,7 @@ let event1609 = {
         text: "Continue"
     }
     ],
-    image: "learnFarmingEvent.jpg"
+    image: "indian_attack.jpg"
 };
 let event1610 = {
     initialEffect: {
@@ -443,7 +406,7 @@ let event1610 = {
         text: "Continue"
     }
     ],
-    image: "learnFarmingEvent.jpg"
+    image: "arrivalNoFood.jpg"
 };
 
 let event1611 = {
@@ -461,7 +424,7 @@ let event1611 = {
         text: "Continue"
     }
     ],
-    image: "learnFarmingEvent.jpg"
+    image: "arrivalWithFood.jpg"
 };
 let event1612 = {
     initialEffect: {
@@ -483,7 +446,7 @@ let event1612 = {
         text: "Add 100 Equipment"
     }
     ],
-    image: "learnFarmingEvent.jpg"
+    image: "tradeEvent.jpg"
 };
 // TODO GIVE A MESSAGE EXPLAINING OUTCOME!
 let event1613 = {
@@ -503,7 +466,7 @@ let event1613 = {
         text: "Continue"
     }
     ],
-    image: "learnFarmingEvent.jpg"
+    image: "indian_attack.jpg"
 };
 let event1614 = {
     initialEffect: {
@@ -522,7 +485,7 @@ let event1614 = {
         text: "Continue"
     }
     ],
-    image: "learnFarmingEvent.jpg"
+    image: "indian_attack.jpg"
 };
 let event1615 = {
     initialEffect: {
@@ -539,7 +502,7 @@ let event1615 = {
         text: "Continue"
     }
     ],
-    image: "learnFarmingEvent.jpg"
+    image: "arrivalWithFood.jpg"
 };
 let event1616 = {
     initialEffect: {
@@ -554,7 +517,7 @@ let event1616 = {
         text: "Continue"
     }
     ],
-    image: "learnFarmingEvent.jpg"
+    image: "fireEvent.jpg"
 };
 let event1617 = {
     initialEffect: {
@@ -569,7 +532,7 @@ let event1617 = {
         text: "Continue"
     }
     ],
-    image: "learnFarmingEvent.jpg"
+    image: "winter.jpg"
 };
 let event1618 = {
     initialEffect: {
@@ -588,7 +551,7 @@ let event1618 = {
         text: "Continue"
     }
     ],
-    image: "learnFarmingEvent.jpg"
+    image: "indian_attack.jpg"
 };
 let event1619 = {
     initialEffect: {
@@ -603,7 +566,7 @@ let event1619 = {
         text: "Continue"
     }
     ],
-    image: "learnFarmingEvent.jpg"
+    image: "slavery.jpg"
 };
 let event1620 = {
     initialEffect: {
@@ -618,7 +581,7 @@ let event1620 = {
         text: "Continue"
     }
     ],
-    image: "learnFarmingEvent.jpg"
+    image: "finalPic.jpg"
 };
 
 /**
