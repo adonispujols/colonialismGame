@@ -281,8 +281,8 @@ let eventList = [
         initialEffect: {
             effect: function() {
                 console.log("fire happening");
-                yearEndPopulation *= 0.5;
-                totalShelter *= 0.5;
+                yearEndPopulation = Math.ceil(yearEndPopulation * 0.5);
+                totalShelter = Math.ceil(totalShelter * 0.5);
             },
             text: "Storm: Lose half of total shelter, Lose half of total people"
         },
@@ -923,7 +923,7 @@ function endRolls() {
         +" Food consumed= " + yearEndPopulation + " Food. Net: " +(producedSumFood- yearEndPopulation) + " Food.";
     // if not enough food for each person, reduce population by difference
     if (totalFood < 0) {
-        yearEndPopulation += totalFood; // total food would be negative
+        yearEndPopulation += Math.ceil(totalFood); // total food would be negative
         document.getElementById("foodEffects").textContent = "Not enough food, " + totalFood + " people died of hunger!";
     } else {
         // enough food for all
@@ -976,14 +976,14 @@ function endRolls() {
     if (yearEndPopulation <= 0) {
         // TODO DO NOT ENABLE BUTTOM IF GAME OVER! just show final score
         document.getElementById("gameOver").style.display = "block";
-        document.getElementById("gameOver").textContent = "GAME OVER!\NAll your colonists have died! "+colonyName + " is now an empty ghost town... GAME OVER! "+
+        document.getElementById("gameOver").textContent = "GAME OVER!\n All your colonists have died! "+colonyName + " is now an empty ghost town..."+
             "Final Score= "+finalScore+ " Points!";
         document.getElementById("startNextYearButton").disabled = true;
     }
     // reached final year (after 1619 you reached goal of 1920)
     if (currentYear === 1620) {
         document.getElementById("gameOver").style.display = "block";
-        document.getElementById("gameOver").textContent = "GAME OVER!\NAfter 14 brutal years, your colony of "+colonyName
+        document.getElementById("gameOver").textContent = "GAME OVER!\n After 14 brutal years, your colony of "+colonyName
             +" has survived until 1620 after all odds. Your Final Score is: " +finalScore+"!";
         document.getElementById("startNextYearButton").disabled = true;
     }
