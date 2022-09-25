@@ -3,7 +3,7 @@ const GAME_START_POPULATION = 100;
 const GAME_START_FOOD = 208;
 const GAME_START_EQUIPMENT = 150;
 const GAME_START_SHELTER = 104;
-const BASE_FARMER_PRODUCTION = 2;
+let BASE_FARMER_PRODUCTION = 0;
 // TODO simple for now, but should be [0.1,0.4,0.5], etc. basically always do 1st not 2
 // 1st weight corresponds to outcome 1, so update as necessary
 const FARMER_EVENT_WEIGHTS = [1000, 0.0001]
@@ -22,6 +22,7 @@ let farmerModifier = 1; // starts at 1 by default
 let totalFood = GAME_START_FOOD;
 let totalEquipment = GAME_START_EQUIPMENT;
 let totalShelter = GAME_START_SHELTER;
+// BUG: DEFENSE ISN'T PUT DOWN BY MURDER EVENT PROPERLY (not real debuff atmmmm)...
 let totalDefense = 0;
 let currentYear = 1606;
 let learnedFarming = false;  // don't learn farming until 1608 event (or so)
@@ -40,7 +41,261 @@ let learnedFarming = false;  // don't learn farming until 1608 event (or so)
 // TODO SELECT IMAGE HERE TOO
 // TODO use speical like @ to indicate where to put colony naame! (replace @ with colony name)
 // only support 3 buttons atm
+// let eventList = [
+//     {
+//         weight: 1,
+//         initialEffect: {
+//             effect: function() {
+//                 console.log("fire happening");
+//                 totalShelter -= 30;
+//             },
+//             text: "A grand fire burned down several houses. You lost 30 shelter."
+//         },
+//         options: [
+//         {
+//             effect: function() {},
+//             text: "We will survive."
+//         }
+//         ],
+//         image: "fireEvent.jpg"
+//     },
+//     {
+//         weight: 1,
+//         initialEffect: {
+//             effect: function() {
+//                 yearEndPopulation -= 30;
+//             },
+//             text: "A plague sweeps through town. Lost 30 people."
+//         },
+//         options: [
+//         {
+//             effect: function() {},
+//             text: "QUARANTINE."
+//         }
+//         ],
+//         image: "plague.jpg"
+//     },
+//     {
+//         weight: 1,
+//         initialEffect: {
+//             effect: function() {
+//                 newArrivals += 148;
+//             },
+//             text: "Rejoice! 148 new colonists arrive at the end of the year but do not have food with them. You must provide for them next year!"
+//         },
+//         options: [
+//         {
+//             effect: function() {},
+//             text: "We welcome these huddled masses."
+//         }
+//         ],
+//         image: "arrivalNoFood.jpg"
+//     },
+//     {
+//         weight: 1,
+//         initialEffect: {
+//             effect: function() {
+//                 newArrivals += 100;
+//                 totalFood += 100;
+//                 totalEquipment += 100;
+//             },
+//             text: "Good, heavens! 100 new wealthy colonists arrive, bringing 100 Food and Equipment!"
+//         },
+//         options: [
+//         {
+//             effect: function() {},
+//             text: "Glorious day! May we thrive!"
+//         }
+//         ],
+//         image: "arrivalWithFood.jpg"
+//     },
+//     {
+//         weight: 1,
+//         initialEffect: {
+//             effect: function() {
+//                 yearEndPopulation -= 1;
+//             },
+//             text: "A murderer killed 1 person. You can either sentence the criminal to death, or assign a Guard to watch over him, reducing defense by 10%?"
+//         },
+//         options: [
+//         {
+//             effect: function() {
+//                 yearEndPopulation -=1;
+//             },
+//             text: "An eye for an eye. Kill him! (-1 population)"
+//         },
+//         {
+//             effect: function() {
+//                 totalDefense -= 0.1;
+//             },
+//             text: "We need every person we can get. Spare him. (-10% Defense)"
+//         }
+//         ],
+//         image: "fireEvent.jpg"
+//     }
+// ];
+
 let eventList = [
+    {
+        weight: 0.25,
+        initialEffect: {
+            effect: function() {
+                yearEndPopulation -= 25;
+            },
+            text: "Bad water. -25 people"
+        },
+        options: [
+        {
+            effect: function() {},
+            text: "We will survive."
+        }
+        ],
+        image: "fireEvent.jpg"
+    },
+    {
+        weight: 0.15,
+        initialEffect: {
+            effect: function() {
+                yearEndPopulation -= 1;
+            },
+            text: "A murderer killed 1 person. You can either sentence the criminal to death, or assign a Guard to watch over him, reducing defense by 10%?"
+        },
+        options: [
+            {
+                effect: function() {
+                    yearEndPopulation -=1;
+                },
+                text: "An eye for an eye. Kill him! (-1 population)"
+            },
+            {
+                effect: function() {
+                    totalDefense -= 0.1;
+                },
+                text: "We need every person we can get. Spare him. (-10% Defense this year)"
+            }
+        ],
+        image: "fireEvent.jpg"
+    },
+    {
+        weight: .1,
+        initialEffect: {
+            effect: function() {
+                yearEndPopulation -= 35;
+            },
+            text: "Disease kills 35 people."
+        },
+        options: [
+        {
+            effect: function() {},
+            text: "We will survive."
+        }
+        ],
+        image: "fireEvent.jpg"
+    },
+    {
+        weight: .05,
+        initialEffect: {
+            effect: function() {
+                totalEquipment -= 20;
+            },
+            text: "Wear and tear removes 20 equipment."
+        },
+        options: [
+        {
+            effect: function() {},
+            text: "We will survive."
+        }
+        ],
+        image: "fireEvent.jpg"
+    },
+    {
+        weight: 0.15,
+        initialEffect: {
+            effect: function() {
+                if ((guardsInput * .03) < 0.5) {
+                    yearEndPopulation -= 10;
+                    totalEquipment -= 20;
+                    totalFood -= 75;
+                }
+            },
+            text: "Iroquois attack! If your defense score is lower than 50% this year…\n-10 people, -20 equipment, -75 food."
+        },
+        options: [
+        {
+            effect: function() {},
+            text: "We will survive."
+        }
+        ],
+        image: "fireEvent.jpg"
+    },
+    {
+        weight: .2,
+        initialEffect: {
+            effect: function() {
+                console.log("fire happening");
+                totalShelter -= 150;
+            },
+            text: "A grand fire burned down several houses. You lost 150 shelter."
+        },
+        options: [
+        {
+            effect: function() {},
+            text: "We will survive."
+        }
+        ],
+        image: "fireEvent.jpg"
+    },
+    {
+        weight: .1,
+        initialEffect: {
+            effect: function() {
+                totalFood -= 80;
+            },
+            text: "Bad food shortage. -80 food."
+        },
+        options: [
+        {
+            effect: function() {},
+            text: "We will survive."
+        }
+        ],
+        image: "fireEvent.jpg"
+    },
+    {
+        weight: .1,
+        initialEffect: {
+            effect: function() {
+                console.log("fire happening");
+                farmerModifier *= 0.5;
+            },
+            text: "Blight: Food produced from farmers this year is cut in half"
+        },
+        options: [
+        {
+            effect: function() {},
+            text: "We will survive."
+        }
+        ],
+        image: "fireEvent.jpg"
+    },
+    {
+        weight: 0.05,
+        initialEffect: {
+            effect: function() {
+                console.log("fire happening");
+                yearEndPopulation *= 0.5;
+                totalShelter *= 0.5;
+            },
+            text: "Storm: Lose half of total shelter, Lose half of total people"
+        },
+        options: [
+        {
+            effect: function() {},
+            text: "We will survive."
+        }
+        ],
+        image: "fireEvent.jpg"
+    },
     {
         weight: 1,
         initialEffect: {
@@ -62,76 +317,20 @@ let eventList = [
         weight: 1,
         initialEffect: {
             effect: function() {
-                yearEndPopulation -= 30;
+                console.log("fire happening");
+                totalShelter -= 30;
             },
-            text: "A plague sweeps through town. Lost 30 people."
+            text: "A grand fire burned down several houses. You lost 30 shelter."
         },
         options: [
         {
             effect: function() {},
-            text: "QUARANTINE."
-        }
-        ],
-        image: "plague.jpg"
-    },
-    {
-        weight: 1,
-        initialEffect: {
-            effect: function() {
-                newArrivals += 148;
-            },
-            text: "Rejoice! 148 new colonists arrive at the end of the year but do not have food with them. You must provide for them next year!"
-        },
-        options: [
-        {
-            effect: function() {},
-            text: "We welcome these huddled masses."
-        }
-        ],
-        image: "arrivalNoFood.jpg"
-    },
-    {
-        weight: 1,
-        initialEffect: {
-            effect: function() {
-                newArrivals += 100;
-                totalFood += 100;
-                totalEquipment += 100;
-            },
-            text: "Good, heavens! 100 new wealthy colonists arrive, bringing 100 Food and Equipment!"
-        },
-        options: [
-        {
-            effect: function() {},
-            text: "Glorious day! May we thrive!"
-        }
-        ],
-        image: "arrivalWithFood.jpg"
-    },
-    {
-        weight: 1,
-        initialEffect: {
-            effect: function() {
-                yearEndPopulation -= 1;
-            },
-            text: "A murderer killed 1 person. You can either sentence the criminal to death, or assign a Guard to watch over him, reducing defense by 10%?"
-        },
-        options: [
-        {
-            effect: function() {
-                yearEndPopulation -=1;
-            },
-            text: "An eye for an eye. Kill him! (-1 population)"
-        },
-        {
-            effect: function() {
-                totalDefense -= 0.1;
-            },
-            text: "We need every person we can get. Spare him. (-10% Defense)"
+            text: "We will survive."
         }
         ],
         image: "fireEvent.jpg"
-    }
+    },
+
 ];
 
 // learn farming
@@ -140,23 +339,25 @@ let forcedFarmingEvent = {
         effect: function() {
             console.log("farming happening");
         },
-        text: "You can learn to Farm for a cost of 30 equipment OR steal 30 food from natives (and never learn to farm)."
+        text: "A messenger from the Powhatan Tribe approaches! Do you…\n Accept his help: Set your farming skill level to 2 but Lose 30 equipment in trade.\n OR Capture him and raid his people. Set your farming skill level to 1, Gain 50 food, and Gain 1 Person"
     },
     options: [
     {
         effect: function() {
-            console.log("farm chosen");
             learnedFarming = true;
+            BASE_FARMER_PRODUCTION = 2;
             totalEquipment -= 30;
         },
-        text: "Learn Farming. -30 Equipment."
+        text: "Be peaceful and work together."
     },
     {
         effect: function() {
-            console.log("attack natives");
-            totalFood += 30;
+            learnedFarming = true;
+            BASE_FARMER_PRODUCTION = 1;
+            totalFood += 50;
+            newArrivals += 1;
         },
-        text: "Attack Natives. +30 Food."
+        text: "Attack Natives!."
     }
     ],
     image: "learnFarmingEvent.jpg"
@@ -179,6 +380,245 @@ let forcedSlaveryEvent = {
     }
     ],
     image: "slavery.jpg"
+};
+
+let event1606 = {
+    initialEffect: {
+        effect: function() {
+            totalShelter -= 104;
+        },
+        text: "The boat you arrived in has returned home to England. - 104 shelter."
+    },
+    options: [
+    {
+        effect: function() {},
+        text: "Continue"
+    }
+    ],
+    image: "learnFarmingEvent.jpg"
+};
+
+let event1607 = {
+    initialEffect: {
+        effect: function() {
+            yearEndPopulation -= 30;
+            totalFood += 50;
+            totalEquipment += 15;
+        },
+        text: "Disease Outbreak! -30 people.\nGift from local Native Tribe. +50 food, +15 equipment"
+    },
+    options: [
+    {
+        effect: function() {},
+        text: "Continue"
+    }
+    ],
+    image: "learnFarmingEvent.jpg"
+};
+
+let event1609 = {
+    initialEffect: {
+        effect: function() {
+        },
+        text: "War declared with the Iroquois Federation! They may attack in the future…."
+    },
+    options: [
+    {
+        effect: function() {},
+        text: "Continue"
+    }
+    ],
+    image: "learnFarmingEvent.jpg"
+};
+let event1610 = {
+    initialEffect: {
+        effect: function() {
+            newArrivals += 150;
+        },
+        text: "Late arrivals to the colony finally arrived after being shipwrecked in Bermuda!. +150 population"
+    },
+    options: [
+    {
+        effect: function() {},
+        text: "Continue"
+    }
+    ],
+    image: "learnFarmingEvent.jpg"
+};
+
+let event1611 = {
+    initialEffect: {
+        effect: function() {
+            newArrivals += 100;
+            totalFood += 100;
+            totalEquipment +=100;
+        },
+        text: "Crops eaten by wild animals! Harvest reduced to 25%.\nMore colonists arrive from England! +100 people, +100 food, +100 equipment."
+    },
+    options: [
+    {
+        effect: function() {},
+        text: "Continue"
+    }
+    ],
+    image: "learnFarmingEvent.jpg"
+};
+let event1612 = {
+    initialEffect: {
+        effect: function() {
+        },
+        text: "Tobacco farming has taken off in the colony! What will you trade the tobacco for?\nAdd 200 food.\nOR add 100 equipment."
+    },
+    options: [
+    {
+        effect: function() {
+            totalFood += 200;
+        },
+        text: "Add 200 Food."
+    },
+    {
+        effect: function() {
+            totalEquipment += 100;
+        },
+        text: "Add 100 Equipment"
+    }
+    ],
+    image: "learnFarmingEvent.jpg"
+};
+// TODO GIVE A MESSAGE EXPLAINING OUTCOME!
+let event1613 = {
+    initialEffect: {
+        effect: function() {
+            if ((guardsInput * .03) < 0.5) {
+                yearEndPopulation -= 100;
+                totalShelter -= 100;
+                totalEquipment -= 30;
+            }
+        },
+        text: "Iroquois attack! If your defense score is lower than 50% this year…\n-100 people, -100 shelter, -30 equipment."
+    },
+    options: [
+    {
+        effect: function() {},
+        text: "Continue"
+    }
+    ],
+    image: "learnFarmingEvent.jpg"
+};
+let event1614 = {
+    initialEffect: {
+        effect: function() {
+            if ((guardsInput * .03) < 0.5) {
+                yearEndPopulation -= 20;
+                totalFood -= 100;
+                totalEquipment -= 40;
+            }
+        },
+        text: "Iroquois attack continues! If your defense score is lower than 60% this year…\n-20 people, -100 food, -40 equipment."
+    },
+    options: [
+    {
+        effect: function() {},
+        text: "Continue"
+    }
+    ],
+    image: "learnFarmingEvent.jpg"
+};
+let event1615 = {
+    initialEffect: {
+        effect: function() {
+            newArrivals += 150;
+            totalFood += 50;
+            totalEquipment += 80;
+        },
+        text: "More colonists arrive from England!+150 people, +50 food, +80 equipment."
+    },
+    options: [
+    {
+        effect: function() {},
+        text: "Continue"
+    }
+    ],
+    image: "learnFarmingEvent.jpg"
+};
+let event1616 = {
+    initialEffect: {
+        effect: function() {
+            totalFood -= 100;
+        },
+        text: "Your food storehouse was accidentally burned down!  -lose 100 food."
+    },
+    options: [
+    {
+        effect: function() {},
+        text: "Continue"
+    }
+    ],
+    image: "learnFarmingEvent.jpg"
+};
+let event1617 = {
+    initialEffect: {
+        effect: function() {
+            yearEndPopulation -=80;
+        },
+        text: "A harsh winter causes death due to exposure!  -lose 80 people."
+    },
+    options: [
+    {
+        effect: function() {},
+        text: "Continue"
+    }
+    ],
+    image: "learnFarmingEvent.jpg"
+};
+let event1618 = {
+    initialEffect: {
+        effect: function() {
+            if ((guardsInput * .03) < 0.75) {
+                yearEndPopulation -= 20;
+                totalFood -= 100;
+                totalEquipment -= 40;
+            }
+        },
+        text: "Iroquois attack continues!  If your defense score is lower than 75% this year…  -Lose 20 people -Lose 100 food -Lose 40 equipment "
+    },
+    options: [
+    {
+        effect: function() {},
+        text: "Continue"
+    }
+    ],
+    image: "learnFarmingEvent.jpg"
+};
+let event1619 = {
+    initialEffect: {
+        effect: function() {
+            newArrivals += 100;
+        },
+        text: "The Atlantic Slave Trade has begun in your colony.  -add 100 people."
+    },
+    options: [
+    {
+        effect: function() {},
+        text: "Continue"
+    }
+    ],
+    image: "learnFarmingEvent.jpg"
+};
+let event1620 = {
+    initialEffect: {
+        effect: function() {
+            newArrivals += 100;
+        },
+        text: "GAME OVER"
+    },
+    options: [
+    {
+        effect: function() {},
+        text: "Continue"
+    }
+    ],
+    image: "learnFarmingEvent.jpg"
 };
 
 /**
@@ -293,15 +733,15 @@ function confirmJobs() {
         buildersInput = rawBuildersInput;
         guardsInput = rawGuardsInput;
         const jobsAssigned = farmersInput+huntersInput+buildersInput+guardsInput;
-        if (jobsAssigned > yearStartPopulation) {
-            displayErrorMessage("Assigned more jobs than people. Remove "+(jobsAssigned - yearStartPopulation)+" jobs.");
+        if (jobsAssigned > yearEndPopulation) {
+            displayErrorMessage("Assigned more jobs than people. Remove "+(jobsAssigned - yearEndPopulation)+" jobs.");
         } else if (jobsAssigned > totalEquipment) {
             displayErrorMessage("Assigned more jobs than equipment. Remove "+(jobsAssigned - totalEquipment)+ " jobs.");
-        } else if (jobsAssigned < yearStartPopulation) {
+        } else if ((jobsAssigned < yearEndPopulation) && (jobsAssigned < totalEquipment)) {
             // recommend to add mininum between equipment available for jobs or remaining population-
             //   -whichever one is a limiting factor
             displayErrorMessage("Assigned less jobs than people. Add "
-                +Math.min(yearStartPopulation - jobsAssigned, totalEquipment - jobsAssigned)+" more jobs.");
+                +Math.min(yearEndPopulation - jobsAssigned, totalEquipment - jobsAssigned)+" more jobs.");
         } else {
             // input is validated so we can move on to next step.
             rollEvent();
@@ -333,21 +773,49 @@ function rollEvent() {
     // forcedFarmingEvent
     // forced event to offer to learn Farming
     // TODO ADD BUTTONS FOR EACH OPTION
+    // hard coded events first THEN random events
     let chosenEvent = {};
-    if (currentYear === 1608) {
+    if (currentYear === 1606) {
+        chosenEvent = event1606;
+    } else if (currentYear === 1607) {
+        chosenEvent = event1607;
+    } else if (currentYear === 1608) {
         chosenEvent = forcedFarmingEvent;
+    } else if (currentYear === 1609) {
+        chosenEvent = event1609;
+    } else if (currentYear === 1610) {
+        chosenEvent = event1610;
+    } else if (currentYear === 1611) {
+        chosenEvent = event1611;
+    } else if (currentYear === 1612) {
+        chosenEvent = event1612;
+    } else if (currentYear === 1613) {
+        chosenEvent = event1613;
+    } else if (currentYear === 1614) {
+        chosenEvent = event1614;
+    } else if (currentYear === 1615) {
+        chosenEvent = event1615;
+    } else if (currentYear === 1616) {
+        chosenEvent = event1616;
+    } else if (currentYear === 1617) {
+        chosenEvent = event1617;
+    } else if (currentYear === 1618) {
+        chosenEvent = event1618;
     } else if (currentYear === 1619) {
-        chosenEvent = forcedSlaveryEvent;
-    } else {
-        // random choice event
-        let eventWeights = [];
-        for (const eventItem of eventList) {
-            eventWeights.push(eventItem.weight);
-        }
-        const eventRoll = weightedRandomChoice(eventList.length, eventWeights);
-        chosenEvent = eventList[eventRoll];
-        console.log("event roll: " + eventRoll);
+        chosenEvent = event1619;
+    }  else if (currentYear === 1620) {
+        chosenEvent = event1620;
     }
+    //else {
+    //     // // random choice event
+    //     // let eventWeights = [];
+    //     // for (const eventItem of eventList) {
+    //     //     eventWeights.push(eventItem.weight);
+    //     // }
+    //     // const eventRoll = weightedRandomChoice(eventList.length, eventWeights);
+    //     // chosenEvent = eventList[eventRoll];
+    //     // console.log("event roll: " + eventRoll);
+    // }
     // todo change vent image
     document.getElementById("eventImage").src = chosenEvent.image;
     document.getElementById("eventText").textContent = chosenEvent.initialEffect.text;
@@ -361,7 +829,30 @@ function rollEvent() {
         optionButton.onclick = function() {
             chosenEvent.options[i].effect();
             updateResources();
-            endRolls();
+            document.getElementById("endEventButton1").style.display = "none";
+            document.getElementById("endEventButton2").style.display = "none";;
+            document.getElementById("endEventButton3").style.display = "none";;
+            // endRolls();
+            // random choice event
+            let eventWeights = [];
+            for (const eventItem of eventList) {
+                eventWeights.push(eventItem.weight);
+            }
+            const eventRoll = weightedRandomChoice(eventList.length, eventWeights);
+            let chosenRandomEvent = eventList[eventRoll];
+            console.log("event roll: " + eventRoll);
+            document.getElementById("eventImage").src = chosenRandomEvent.image;
+            document.getElementById("eventText").textContent = chosenRandomEvent.initialEffect.text;
+            for (let j = 0; j < chosenRandomEvent.options.length; j++){
+                let randomoptionButton = document.getElementById("endEventButton" + (i+1));
+                randomoptionButton.style.display = "block";
+                randomoptionButton.value = chosenRandomEvent.options[j].text;
+                randomoptionButton.onclick = function() {
+                    chosenRandomEvent.options[j].effect();
+                    updateResources();
+                    endRolls();
+                }
+            }
         }
     }
     // document.getElementById("endEventButton").style.display = "block";
@@ -400,10 +891,36 @@ function endRolls() {
     for (const farmerEvent of farmerEventList) {
         farmerWeights.push(farmerEvent.weight);
     }
-    const farmerRoll = weightedRandomChoice(farmerEventList.length, farmerWeights);
-    let chosenFarmerEvent = farmerEventList[farmerRoll];
+    let harvestModifier = 0;
+    if (currentYear === 1609) {
+        harvestModifier = 0.5;
+    } else if (currentYear === 1610) {
+        harvestModifier = 1;
+    } else if (currentYear === 1611) {
+        harvestModifier = 0.25;
+    } else if (currentYear === 1612) {
+        harvestModifier = 1;
+    } else if (currentYear === 1613) {
+        harvestModifier = 0.75;
+    } else if (currentYear === 1614) {
+        harvestModifier = 1;
+    } else if (currentYear === 1615) {
+        harvestModifier = 1;
+    } else if (currentYear === 1616) {
+        harvestModifier = 1;
+    } else if (currentYear === 1617) {
+        harvestModifier = 0.5;
+    } else if (currentYear === 1618) {
+        harvestModifier = 1;
+    } else if (currentYear === 1619) {
+        harvestModifier = 1;
+    } else if (currentYear === 1620){
+        harvestModifier = 1;
+    }
+    // const farmerRoll = weightedRandomChoice(farmerEventList.length, farmerWeights);
+    // let chosenFarmerEvent = farmerEventList[farmerRoll];
     // document.getElementById("farmerRoll").textContent = chosenFarmerEvent.text;
-    farmerModifier *= chosenFarmerEvent.farmerProductionModifier;
+    // farmerModifier *= chosenFarmerEvent.farmerProductionModifier;
     // if (farmerRoll===0) {
     //     document.getElementById("farmerRoll").textContent ="Farmer Roll: " + 1;
     // } else if (farmerRoll===1) {
@@ -417,14 +934,12 @@ function endRolls() {
 
     // calculate production, then consume, and negative effects calculated for deficit
     // food production
-    let producedFarmerFood = Math.round(farmersInput * farmerModifier * BASE_FARMER_PRODUCTION);
+    let producedFarmerFood = Math.round(farmersInput * farmerModifier * harvestModifier* BASE_FARMER_PRODUCTION);
     let producedHunterFood = huntersInput * hunterRoll;
     let producedSumFood = producedFarmerFood + producedHunterFood;
-    let producedShelter = buildersInput * 10;  // shelter from builders
-    let producedDefense = guardsInput * .1;   // each guard adds 10% defense;
-    document.getElementById("farmerRoll").textContent =
-        chosenFarmerEvent.text +
-        " Farmers Produced Total of: "+producedFarmerFood + " Food.";
+    let producedShelter = buildersInput * 5;  // shelter from builders
+    let producedDefense = guardsInput * .03;   // each guard adds 3% defense;
+    document.getElementById("farmerRoll").textContent = "Harvest Modifier: "+harvestModifier+". Farmers Produced Total of: "+producedFarmerFood + " Food.";
     // TODO say different things based on hunterRoll
     document.getElementById("hunterRoll").textContent = "Hunter Roll: " + hunterRoll +
         ". Hunters produced: " + producedHunterFood + " Food";
@@ -473,16 +988,18 @@ function endRolls() {
     // defense roll, do something if defense not 100%
     // for now, there's a 20% chance of an attack that can remove 10*(1 - defense rating) (make 0 if negative killed)
     // TODO, USE THEIR COLONY NAME AS MUCH AS POSSIBLE NOT JUST "your colony"
-    let attackRoll = Math.random();
-    if (attackRoll < 0.2) {
-        // TODO do something bad
-        let popsKilled = Math.max(0, 10*(1 - totalDefense));
-        yearEndPopulation-=popsKilled;
-        document.getElementById("defenseRoll").textContent = colonyName+" was attacked! With a Defense of "+(totalDefense*100)+"%, "
-        +"you lost: "+popsKilled+" Population!";
-    } else {
-        document.getElementById("defenseRoll").textContent = colonyName+" was not attacked this year.";
-    }
+    // let attackRoll = Math.random();
+    // if (attackRoll < 0.2) {
+    //     // TODO do something bad
+    //     let popsKilled = Math.max(0, 10*(1 - totalDefense));
+    //     yearEndPopulation-=popsKilled;
+    //     document.getElementById("defenseRoll").textContent = colonyName+" was attacked! With a Defense of "+(totalDefense*100)+"%, "
+    //     +"you lost: "+popsKilled+" Population!";
+    // } else {
+    //     document.getElementById("defenseRoll").textContent = colonyName+" was not attacked this year.";
+    // }
+
+
     yearEndPopulation += newArrivals;  // newArrivals do not immediately consume resources
     document.getElementById("finalPopulation").textContent = "With " +newArrivals+" new colonists, Your final Population is: "+yearEndPopulation+"! (new people arrive at very end of year)";
     let finalScore = totalFood + totalEquipment + totalShelter + 100;
@@ -495,7 +1012,7 @@ function endRolls() {
         document.getElementById("startNextYearButton").disabled = true;
     }
     // reached final year (after 1619 you reached goal of 1920)
-    if (currentYear === 1619) {
+    if (currentYear === 1620) {
         document.getElementById("gameOver").style.display = "block";
         document.getElementById("gameOver").textContent = "After 14 brutal years, your colony of "+colonyName
             +" has survived until 1620 after all odds. Your Final Score is: " +finalScore+"!";
