@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Colonization Game</title>
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+    <div id="initialScreen">
+        <video playsinline autoplay muted loop id="introVideo">
+            <source src="introbackground.mp4" type="video/mp4">
+        </video>
+        <!-- content that goes ONTOP of video -->
+        <div class="overlayContent">
+            <img src="titleTextImage.png" id="title">
+            <img src="titleIcon.png" id="titleIcon">
+            <br>
+            <div class="startScreenBody">
+                <div class="field">
+                    <label for="name">Colony Name:</label>
+                    <input type="text" id="name" name="name" placeholder="Enter your Colony's Name" />
+                </div>
+                <div class="field">
+                    <label for="flagFile">Colony Flag:</label>
+                    <input type="file" id="flagFile">
+                    <img src="" id="flagPreviewTitle">
+                </div>
+                <div class="field">
+                    <button onclick="setupColony()" id="startButton" disabled>Confirm and Start</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="gameScreen">
+        <div>
+            <img src="background_image.png" id="gameBackground">
+        </div>
+        <div class="gameContent">
+            <p id="currentYear" style="font-size: 50px; display:inline-block;"><span style="background-color: lightblue;">Anno Domini: 1606</span></p>
+            <p id="colonyName" style="font-size: 50px; text-align: center; display:inline-block;"><span style="background-color: lightblue;">Colony Name</span></p>
+            <img src="" id="flagPreviewGame">
+            <!-- row for two coloumns of content -->
+            <div class="row">
+                <div class="column" style="background-color:#33fcff;">
+                    <p style="font-size: 35px;font-weight: bold; background-color:lightblue;">Assign Jobs</p>
+                    <div class="item">
+                        <img src="pop.png" class="iconImg">
+                        <p class="itemLabel" id="currentPopulation">Population</p>
+                        <br>
+                    </div>
+                    <div class="item">
+                        <img src="farmer.png" class="iconImg">
+                        <label for="farmersInput" class="itemLabel">Farmers:</label>
+                        <input  id="farmersInput" type="number" value="0" autocomplete="off" /><br>
+                    </div>
+                    <div class="item">
+                        <img src="hunter.png" class="iconImg">
+                        <label for="huntersInput" class="itemLabel">Hunters:</label>
+                        <input  id="huntersInput" type="number" value="0" autocomplete="off" /><br>
+                    </div>
+                    <div class="item">
+                        <img src="builder.png" class="iconImg">
+                        <label for="buildersInput" class="itemLabel">Builders:</label>
+                        <input  id="buildersInput" type="number" value="0" autocomplete="off" /><br>
+                    </div>
+                    <div class="item">
+                        <img src="guard.png" class="iconImg">
+                        <label for="guardsInput" class="itemLabel">Guards:</label>
+                        <input  id="guardsInput" type="number" value="0" autocomplete="off" /><br>
+                    </div>
+                    <div>
+                        <input id ="confirmJobs" type="submit" value="Confirm Jobs" onclick="confirmJobs()" />
+                    </div>
+                    <p id="errorPopup"></p>
+                </div>
+                <div class="column" style="background-color:#28c9cc;">
+                    <p style="font-size: 35px;font-weight: bold; background-color:lightblue;">Resources</p>
+                    <div class="item">
+                        <img src="food.png" class="iconImg">
+                        <p id="currentFood" class="itemLabel">Food</p>
+                        <br>
+                    </div>
+                    <div class="item">
+                        <img src="equipment.png" class="iconImg">
+                        <p id="currentEquipment" class="itemLabel">Equipment</p>
+                        <br>
+                    </div>
+                    <div class="item">
+                        <img src="shelter.png" class="iconImg">
+                        <p id="currentShelter" class="itemLabel">Shelter</p>
+                        <br>
+                    </div>
+                    <div class="item">
+                        <img src="defense.png" class="iconImg">
+                        <p id="currentDefense" class="itemLabel">Defense</p>
+                    </div>
+                </div>
+            </div>
+            <div id="eventDialog">
+                <p style="font-size:25px;background-color:lightblue; display: inline-block;">Event</p>
+                <img src="fireEvent.jpg" id="eventImage">
+                <div class="eventTextContent">
+                    <p id="eventText">Events</p>
+<!--                     <p id="eventEffects">event effect</p>
+ -->                <div class="eventButtons">
+<!--                         <input id ="endEventButton" type="submit" onclick="endRolls()" value="Continue" />
+ -->                    <input id ="endEventButton1" type="submit" value="option 1" />
+                        <input id ="endEventButton2" type="submit" value="option 2" />
+                        <input id ="endEventButton3" type="submit" value="option 3" />
+                    </div>
+                </div>
+            </div>
+            <div id="yearResults">
+                <p id="farmerRoll">Farmer Roll</p><br>
+                <p id="hunterRoll">Hunter</p><br>
+                <p id="netFood">Food Produced</p><br>
+                <p id="foodEffects">Food Effects</p><br>
+                <p id="shelterProduction">Shelter Production</p><br>
+                <p id="shelterEffects">Shelter Effects</p><br>
+                <p id="defenseRoll">Defense</p><br>
+                <p id="finalPopulation">Final Pop total</p><br>
+                <p id="gameOver">game over</p><br>
+                <div>
+                    <input id ="startNextYearButton" type="submit" onclick="startNextYear()" value="Continue to Next Year" />
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>

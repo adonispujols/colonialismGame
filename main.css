@@ -1,0 +1,195 @@
+/*apply font to everything*/
+*{
+    font-family: Garamond, serif;
+/*      box-sizing: border-box;*/
+}
+
+.overlayContent {
+  position: relative;
+  height: 100vh;
+  /*text-align: center;*/
+  /*display: flex;*/
+  /*align-items: center;*/
+  /*justify-content: center;*/
+}
+
+.startScreenBody{
+}
+
+.iconImg {
+    width: 50px;
+    height: 50px;
+    display:inline-block;
+}
+
+#startButton {
+    margin-top: 45px;
+    font-size: 40px;
+}
+
+.item {
+    background-image: linear-gradient(#0033cc, #002080);
+}
+
+#name {
+    font-size: 25px;
+    width: 60%;
+}
+
+.itemLabel {
+    display:inline-block;
+    color: white;
+    font-size: 25px;
+}
+
+.field {
+    background-color: lightblue;
+    width: 50%;
+    font-size: 40px;
+    display:inline-block;
+}
+
+#title {
+    width: 859px;
+    height: 120px;
+    text-align: center;
+    display:inline-block;
+}
+
+
+#titleIcon {
+    width: 318px;
+    height: 342px;
+    display:inline-block;
+    vertical-align: text-top;
+    vertical-align:top;
+    float: right;
+    margin-right: 200px;
+}
+
+
+#confirmJobs {
+    font-size: 20px;
+}
+
+#flagPreviewTitle {
+    display: none;
+    width: 600px;
+    height: 400px;
+}
+
+#flagPreviewGame {
+    display:inline-block;
+    width: 300px;
+    height: 200px;
+    vertical-align: text-top;
+    float: right;
+}
+
+#gameScreen {
+  display: none;
+}
+
+.gameContent {
+  position: relative;
+  height: 100vh;
+}
+
+#introVideo {
+  object-fit: cover;
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+}
+
+#gameBackground {
+  object-fit: cover;
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+}
+
+#currentYear {
+    font-size: 50px;
+}
+
+.row {
+    display: flex;
+}
+
+.column {
+  flex: 50%;
+  padding: 10px;
+  background-image: url('parchment_background.jpg');
+}
+
+#eventImage {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 50%;
+    height: 40%;
+}
+
+#eventText {
+    font-size: 20px;
+}
+
+#eventButtons {
+    font-size: 20px
+}
+
+/*#eventEffects {
+    font-size: 20px;
+}*/
+
+.eventTextContent {
+    padding-left: 15%;
+    padding-right: 15%;
+}
+
+#eventDialog {
+  display: none;
+  background-image: url('eventBackground.png');
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  height: 600px;
+  width: 100%;
+}
+
+#errorPopup {
+  display: none;
+  font-weight: bolder;
+  color: red;
+  background-color: lightblue;
+  font-size: 20px;
+}
+
+#endEventButton {
+  display: none;
+  font-size: 20px;
+}
+
+#yearResults {
+  display: none;
+}
+
+#yearResults p {
+    background-color: lightblue;
+    display: inline-block;
+    font-size: 20px;
+}
+
+#startNextYearButton {
+    font-size: 20px;
+}
+
+#gameOver {
+  display: none;
+}
+
+
