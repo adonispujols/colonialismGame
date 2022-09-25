@@ -1,6 +1,6 @@
 let colonyName = "Jamestown";
 const GAME_START_POPULATION = 100;
-const GAME_START_FOOD = 208;
+const GAME_START_FOOD = 200;
 const GAME_START_EQUIPMENT = 150;
 const GAME_START_SHELTER = 104;
 let BASE_FARMER_PRODUCTION = 0;
