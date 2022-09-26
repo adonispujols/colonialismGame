@@ -4,14 +4,10 @@ const GAME_START_FOOD = 200;
 const GAME_START_EQUIPMENT = 150;
 const GAME_START_SHELTER = 104;
 let BASE_FARMER_PRODUCTION = 0;
-// TODO simple for now, but should be [0.1,0.4,0.5], etc. basically always do 1st not 2
-// 1st weight corresponds to outcome 1, so update as necessary
-const FARMER_EVENT_WEIGHTS = [1000, 0.0001]
 // snapshot of start of year population to not mess up consumption/production from events
-// ^- population will consume based on end population but produce based on start (makes game easier)
+// ^- population will consume based on end population (excluding new arrivals) but produce based on start (makes game easier)
 // ^- avoids quick gameover scenarios
 // ^- EXCLUDES NEW ARRIVALS (makes it easier so people have 1 year to accommodate the food needs of new colonists)
-// let yearStartPopulation = GAME_START_POPULATION;
 let yearEndPopulation = GAME_START_POPULATION;
 let newArrivals = 0;  // new arrivals do not consume the year they barely arrived (makes it easier to manage)
 let farmersInput = 0;
@@ -22,13 +18,9 @@ let farmerModifier = 1; // starts at 1 by default
 let totalFood = GAME_START_FOOD;
 let totalEquipment = GAME_START_EQUIPMENT;
 let totalShelter = GAME_START_SHELTER;
-// BUG: DEFENSE ISN'T PUT DOWN BY MURDER EVENT PROPERLY (not real debuff atmmmm)...
 let totalDefense = 0;
 let currentYear = 1606;
 let learnedFarming = false;  // don't learn farming until 1608 event (or so)
-
-// TODO WHAT ABOUT EVENTS WITH "2nd" page explaining effects that happen depending on choice?
-// TODO REMMEBER THAT YOU CULDNT EVEN MAKE FOOD UNTIL FORCED EVENT AT 1609!!!
 // list of events
 /**
     Each Event object has:
@@ -37,104 +29,6 @@ let learnedFarming = false;  // don't learn farming until 1608 event (or so)
     options - list of effects user can choose
     image - image to display
 */
-
-// TODO SELECT IMAGE HERE TOO
-// TODO use speical like @ to indicate where to put colony naame! (replace @ with colony name)
-// only support 3 buttons atm
-// let eventList = [
-//     {
-//         weight: 1,
-//         initialEffect: {
-//             effect: function() {
-//                 console.log("fire happening");
-//                 totalShelter -= 30;
-//             },
-//             text: "A grand fire burned down several houses. You lost 30 shelter."
-//         },
-//         options: [
-//         {
-//             effect: function() {},
-//             text: "We will survive."
-//         }
-//         ],
-//         image: "fireEvent.jpg"
-//     },
-//     {
-//         weight: 1,
-//         initialEffect: {
-//             effect: function() {
-//                 yearEndPopulation -= 30;
-//             },
-//             text: "A plague sweeps through town. Lost 30 people."
-//         },
-//         options: [
-//         {
-//             effect: function() {},
-//             text: "QUARANTINE."
-//         }
-//         ],
-//         image: "plague.jpg"
-//     },
-//     {
-//         weight: 1,
-//         initialEffect: {
-//             effect: function() {
-//                 newArrivals += 148;
-//             },
-//             text: "Rejoice! 148 new colonists arrive at the end of the year but do not have food with them. You must provide for them next year!"
-//         },
-//         options: [
-//         {
-//             effect: function() {},
-//             text: "We welcome these huddled masses."
-//         }
-//         ],
-//         image: "arrivalNoFood.jpg"
-//     },
-//     {
-//         weight: 1,
-//         initialEffect: {
-//             effect: function() {
-//                 newArrivals += 100;
-//                 totalFood += 100;
-//                 totalEquipment += 100;
-//             },
-//             text: "Good, heavens! 100 new wealthy colonists arrive, bringing 100 Food and Equipment!"
-//         },
-//         options: [
-//         {
-//             effect: function() {},
-//             text: "Glorious day! May we thrive!"
-//         }
-//         ],
-//         image: "arrivalWithFood.jpg"
-//     },
-//     {
-//         weight: 1,
-//         initialEffect: {
-//             effect: function() {
-//                 yearEndPopulation -= 1;
-//             },
-//             text: "A murderer killed 1 person. You can either sentence the criminal to death, or assign a Guard to watch over him, reducing defense by 10%?"
-//         },
-//         options: [
-//         {
-//             effect: function() {
-//                 yearEndPopulation -=1;
-//             },
-//             text: "An eye for an eye. Kill him! (-1 population)"
-//         },
-//         {
-//             effect: function() {
-//                 totalDefense -= 0.1;
-//             },
-//             text: "We need every person we can get. Spare him. (-10% Defense)"
-//         }
-//         ],
-//         image: "fireEvent.jpg"
-//     }
-// ];
-
 let eventList = [
     {
         weight: 0.25,
@@ -584,26 +478,6 @@ let event1620 = {
     image: "finalPic.jpg"
 };
 
-/**
-    Each farmer event object has:
-    weight - chance from 0 to 1 of happening (0.5 = 50%)
-    farmerProductionModifier - 2 = 2 times farming output
-    text - text of event (both flavor and effect)
-*/
-let farmerEventList = [
-    {
-        weight: 1,
-        farmerProductionModifier: 1,
-        text: "Normal Harvest: Output 1x."
-    },
-    {
-        weight: 0.0001,
-        farmerProductionModifier: 0.5,
-        text: "Drought halves farming output: Output 0.5x."
-    }
-];
-
-
 let flagFile = document.getElementById("flagFile");
 let flagPreviewTitle = document.getElementById("flagPreviewTitle");
 let flagPreviewGame = document.getElementById("flagPreviewGame");
@@ -612,7 +486,6 @@ flagFile.addEventListener("change", function() {
   showImage(this);
 });
 
-// BUG: on restart (if file was selected)file text doesn't reset, and Confirm button is still enabled
 // display chosen flag
 function showImage(input) {
   var reader;
@@ -629,14 +502,6 @@ function showImage(input) {
   }
 }
 
-// use given colony name
-// function setupGame() {
-//     colonyName = document.getElementById("name").value;
-//     // alert(colonyName);
-//     // loadGame();
-//     loadTutorial();
-// }
-
 // load tutorial page
 function loadTutorial() {
      colonyName = document.getElementById("name").value;
@@ -649,12 +514,7 @@ function loadTutorial() {
 }
 
 // start game
-// TODO have a tutorial page before this!
 function loadGame() {
-    // TODO: STOP VIDEO DON'T JUST HIDE!
-    // swap screens from start to game view
-    // let introVideo = document.getElementById("introVideo");
-    // introVideo.pause();
     const tutorialScreen = document.getElementById("tutorialScreen");
     tutorialScreen.style.display = "none";
     const gameScreen = document.getElementById("gameScreen");
@@ -668,8 +528,6 @@ function loadGame() {
     let shelterText = document.getElementById("currentShelter");
     let defenseText = document.getElementById("currentDefense");
     colonyNameText.textContent = "Colony: " + colonyName;
-    // changing text messes up style
-    // colonyNameText.style.backgroundColor = "lightblue";
     populationText.textContent = "Population: " + GAME_START_POPULATION;
     foodText.textContent = "Food: " + GAME_START_FOOD;
     equipmentText.textContent = "Equipment: " + GAME_START_EQUIPMENT;
@@ -716,7 +574,6 @@ function confirmJobs() {
     }
 }
 
-// TODO UPDATE RESOURCE PAGE ON EVERY CHANGE!!!! (either particular change or all of it)
 // make event roll, offer choices, and calculate gains/losses
 function rollEvent() {
     // disable input
