@@ -191,7 +191,7 @@ let eventList = [
 ];
 
 // learn farming
-let forcedFarmingEvent = {
+let event1608 = {
     initialEffect: {
         effect: function() {
             console.log("farming happening");
@@ -218,25 +218,6 @@ let forcedFarmingEvent = {
     }
     ],
     image: "learnFarmingEvent.jpg"
-};
-
-// introduction of slavery 1619
-let forcedSlaveryEvent = {
-    initialEffect: {
-        effect: function() {
-            console.log("slavery happening");
-            farmerModifier *= 2;
-            newArrivals += 100;
-        },
-        text: "100 Slaves arrive for the first time. Food production increased by 2x. "
-    },
-    options: [
-    {
-        effect: function() {},
-        text: "A dark day for freedom."
-    }
-    ],
-    image: "slavery.jpg"
 };
 
 let event1606 = {
@@ -342,7 +323,7 @@ let event1612 = {
     ],
     image: "tradeEvent.jpg"
 };
-// TODO GIVE A MESSAGE EXPLAINING OUTCOME!
+
 let event1613 = {
     initialEffect: {
         effect: function() {
@@ -452,7 +433,7 @@ let event1619 = {
         effect: function() {
             newArrivals += 100;
         },
-        text: "The Atlantic Slave Trade has begun in your colony.  -add 100 people."
+        text: "The Atlantic Slave Trade has begun in your colony. +100 people."
     },
     options: [
     {
@@ -590,12 +571,7 @@ function rollEvent() {
 
     // show event dialog
     document.getElementById("eventDialog").style.display = "block";
-    // start updated (yearEnd) population at yearstart amount
-    // yearEndPopulation = yearStartPopulation;
 
-    // forcedFarmingEvent
-    // forced event to offer to learn Farming
-    // TODO ADD BUTTONS FOR EACH OPTION
     // hard coded events first THEN random events
     let chosenEvent = {};
     if (currentYear === 1606) {
@@ -603,7 +579,7 @@ function rollEvent() {
     } else if (currentYear === 1607) {
         chosenEvent = event1607;
     } else if (currentYear === 1608) {
-        chosenEvent = forcedFarmingEvent;
+        chosenEvent = event1608;
     } else if (currentYear === 1609) {
         chosenEvent = event1609;
     } else if (currentYear === 1610) {
@@ -629,21 +605,9 @@ function rollEvent() {
     }  else if (currentYear === 1620) {
         chosenEvent = event1620;
     }
-    //else {
-    //     // // random choice event
-    //     // let eventWeights = [];
-    //     // for (const eventItem of eventList) {
-    //     //     eventWeights.push(eventItem.weight);
-    //     // }
-    //     // const eventRoll = weightedRandomChoice(eventList.length, eventWeights);
-    //     // chosenEvent = eventList[eventRoll];
-    //     // console.log("event roll: " + eventRoll);
-    // }
-    // todo change vent image
+
     document.getElementById("eventImage").src = chosenEvent.image;
     document.getElementById("eventText").textContent = chosenEvent.initialEffect.text;
-    // document.getElementById("eventEffects").textContent = chosenEvent.effectText;
-    // TODO make button execute what option was chosen (maybe just store index in button option)
     for (let i = 0; i < chosenEvent.options.length; i++) {
         let optionButton = document.getElementById("endEventButton" + (i+1));
         optionButton.style.display = "block";
@@ -656,7 +620,7 @@ function rollEvent() {
             document.getElementById("endEventButton1").style.display = "none";
             document.getElementById("endEventButton2").style.display = "none";;
             document.getElementById("endEventButton3").style.display = "none";;
-            // endRolls();
+
             // random choice event
             let eventWeights = [];
             for (const eventItem of eventList) {
@@ -681,42 +645,19 @@ function rollEvent() {
             updateResources();  // makes effects of main event button not show
         }
     }
-    // document.getElementById("endEventButton").style.display = "block";
-    // TODO HISTORY OF EVENT EFFECTS SOMEHOW!
     // show and execute effect of events (starting from 0)
     chosenEvent.initialEffect.effect();
-    // TODO update inthe middle of event "steps" after choices are made?
     updateResources();
-    // TODO update sources AND move event forward on click...
-    // if (eventRoll === 0) {
-    //     // do event effects 1
-    //     document.getElementById("eventText").textContent = "event 1";
-    //     document.getElementById("eventEffects").textContent = "population -50";
-    //     yearEndPopulation -= 50;
-    //     console.log("population: " + yearEndPopulation);
-    //     document.getElementById("endEventButton").style.display = "block";
-    // }
-    // TODO do NOT add to population from new arrivals until end roll!!! Only decrease
-    // TODO  DO AN EVENT WITH MULTIPLE OPTIONS (have it in the div already toggleable)
-    // TODO RESET YEAR START ON NEXT YEAR AND OTHER INPUTS, ETC!
 }
 
 // close event dialog, show harvest/hunter and other roll results
 function endRolls() {
     // document.getElementById("endEventButton").style.display = "none";
-    // TODO MAKE SURE THE OTHER POSSIBLE BUTTONS ARE TURNED OFF
     document.getElementById("eventDialog").style.display = "none";
     document.getElementById("yearResults").style.display = "block";
     document.getElementById("gameOver").style.display = "none";
 
     // calculate rolls
-    // weighted farmer rolls
-    // event 1
-    // const farmerRoll = weightedRandomChoice(FARMER_EVENT_WEIGHTS.length, FARMER_EVENT_WEIGHTS);
-    let farmerWeights = [];
-    for (const farmerEvent of farmerEventList) {
-        farmerWeights.push(farmerEvent.weight);
-    }
     let harvestModifier = 0;
     if (currentYear === 1609) {
         harvestModifier = 0.5;
@@ -743,18 +684,6 @@ function endRolls() {
     } else if (currentYear === 1620){
         harvestModifier = 1;
     }
-    // const farmerRoll = weightedRandomChoice(farmerEventList.length, farmerWeights);
-    // let chosenFarmerEvent = farmerEventList[farmerRoll];
-    // document.getElementById("farmerRoll").textContent = chosenFarmerEvent.text;
-    // farmerModifier *= chosenFarmerEvent.farmerProductionModifier;
-    // if (farmerRoll===0) {
-    //     document.getElementById("farmerRoll").textContent ="Farmer Roll: " + 1;
-    // } else if (farmerRoll===1) {
-    //     // event 2
-    //     const modifier = 0.5;
-    //     farmerModifier *= modifier;
-    //     document.getElementById("farmerRoll").textContent ="Farmer Roll: " + modifier;
-    // }
     // even-chance hunter rolls. 1/3rd chance for 0, 1, or 2 food
     const hunterRoll = Math.floor(Math.random() * 3);
 
@@ -764,16 +693,13 @@ function endRolls() {
     let producedHunterFood = huntersInput * hunterRoll;
     let producedSumFood = producedFarmerFood + producedHunterFood;
     let producedShelter = buildersInput * 5;  // shelter from builders
-    // let producedDefense = guardsInput * .03;   // each guard adds 3% defense;
     document.getElementById("farmerRoll").textContent = "Farmer Level: " +BASE_FARMER_PRODUCTION+ ",Harvest Modifier: "+harvestModifier+",Event Modifiers: " +farmerModifier +". Farmers Produced Total: "+producedFarmerFood + " Food.";
-    // TODO say different things based on hunterRoll
     document.getElementById("hunterRoll").textContent = "Hunter Roll: " + hunterRoll +
         ". Hunters produced: " + producedHunterFood + " Food";
 
     // add production to stockpile then consume
     totalFood += producedSumFood;
     totalShelter += producedShelter;
-    // totalDefense = producedDefense;
     // consume resources, then apply negative effects (if applicable)
     totalFood -= yearEndPopulation;
     document.getElementById("netFood").textContent = "Total food produced= "+producedSumFood + " Food."
@@ -808,21 +734,8 @@ function endRolls() {
         document.getElementById("shelterEffects").textContent = "You lack "+(Math.ceil(netShelter))+" shelters, and as a result lost: "+lostPops+" people!";
     } else {
         // everyone has proper shelter
-        document.getElementById("shelterEffects").textContent = "Everyone has a shelter so no deaths.";
+        document.getElementById("shelterEffects").textContent = "Everyone has a home so no deaths from lack of shelter.";
     }
-    // defense roll, do something if defense not 100%
-    // for now, there's a 20% chance of an attack that can remove 10*(1 - defense rating) (make 0 if negative killed)
-    // TODO, USE THEIR COLONY NAME AS MUCH AS POSSIBLE NOT JUST "your colony"
-    // let attackRoll = Math.random();
-    // if (attackRoll < 0.2) {
-    //     // TODO do something bad
-    //     let popsKilled = Math.max(0, 10*(1 - totalDefense));
-    //     yearEndPopulation-=popsKilled;
-    //     document.getElementById("defenseRoll").textContent = colonyName+" was attacked! With a Defense of "+(totalDefense*100)+"%, "
-    //     +"you lost: "+popsKilled+" Population!";
-    // } else {
-    //     document.getElementById("defenseRoll").textContent = colonyName+" was not attacked this year.";
-    // }
 
 
     yearEndPopulation += newArrivals;  // newArrivals do not immediately consume resources
@@ -868,15 +781,12 @@ function updateResources() {
     foodText.textContent = "Food: " + totalFood;
     equipmentText.textContent = "Equipment: " + totalEquipment;
     shelterText.textContent = "Shelter: " + totalShelter;
-    // TODO defense shouldn't show at all until final results screen. it's confusing
-    // ^- :wait i have 90% defense what??
     defenseText.textContent = "Defense: " + (totalDefense*100) + "%";
 }
 
 // update year count and reset everything
 function startNextYear() {
     document.getElementById("yearResults").style.display = "none";
-    // TODO update year
     currentYear++;
 
     // reset data
@@ -889,33 +799,6 @@ function startNextYear() {
     guardsInput = 0;
     let currentYearText = document.getElementById("currentYear");
     currentYearText.textContent = "Anno Domini: " + currentYear;
-    // changing text messes up style
-    // currentYearText.style.backgroundColor = "lightblue";
-
-    // // if any resource is below 0, set to 0. (can't have -shelter, lol)
-    // if (totalFood < 0) {
-    //     totalFood = 0;
-    // }
-    // if (totalEquipment < 0) {
-    //     totalEquipment = 0;
-    // }
-    // if (totalShelter < 0) {
-    //     totalShelter = 0;
-    // }
-    // // update data
-    // let populationText = document.getElementById("currentPopulation");
-    // let foodText = document.getElementById("currentFood");
-    // let equipmentText = document.getElementById("currentEquipment");
-    // let shelterText = document.getElementById("currentShelter");
-    // let defenseText = document.getElementById("currentDefense");
-    // populationText.textContent = "Population: " + yearStartPopulation;
-    // foodText.textContent = "Food: " + totalFood;
-    // equipmentText.textContent = "Equipment: " + totalEquipment;
-    // shelterText.textContent = "Shelter: " + totalShelter;
-    // // TODO defense shouldn't show at all until final results screen. it's confusing
-    // // ^- :wait i have 90% defense what??
-    // defenseText.textContent = "Defense: " + totalDefense + "%";
-
 
     // enable input
     if (learnedFarming) {
@@ -964,16 +847,3 @@ function displayErrorMessage(message) {
     errorPopup.style.display = "block";
     errorPopup.textContent = message;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
