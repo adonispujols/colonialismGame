@@ -17,6 +17,23 @@
     display:inline-block;
 }
 
+.fairUseCopyRight {
+    font-size: 25px;
+    background-color: darkslategray;
+    width: fit-content;
+    /*position: fixed;*/
+    bottom: 0px;
+    font-weight: bolder;
+    color: white;
+    left: 40%;
+    margin: 0;
+}
+
+.creditsDiv {
+  position: fixed;
+  bottom: 0;
+}
+
 #startButton {
     margin-top: 45px;
     font-size: 40px;
