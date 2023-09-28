@@ -528,6 +528,8 @@ function confirmJobs() {
     // if invalid input (e.g., if string characters included)
     if (isNaN(rawFarmersInput)||isNaN(rawBuildersInput)||isNaN(rawHuntersInput)||isNaN(rawGuardsInput)) {
         displayErrorMessage("Error: Every box must be filled with a number (type 0 if none)!");
+    } else if (rawFarmersInput < 0 || rawHuntersInput < 0 || rawBuildersInput < 0 || rawGuardsInput || 0) {
+        displayErrorMessage("Error: Cannot assign negative jobs!");
     } else {
         // valid integer
         farmersInput = rawFarmersInput;
